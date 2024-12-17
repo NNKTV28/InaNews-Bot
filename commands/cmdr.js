@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { fetchInaraData } = require("../utils/inaraAPI");
 
 module.exports = {
@@ -22,13 +22,20 @@ module.exports = {
 
     if (result && result.events && result.events[0]) {
       const cmdrInfo = result.events[0].eventData;
-      await interaction.editReply(
-        `**Commander:** ${cmdrName}\n**Rank:** ${cmdrInfo.rank}`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle('Commander Information')
+        .setColor(0x0099FF)
+        .addFields(
+          { name: 'Commander', value: cmdrName },
+          { name: 'Rank', value: cmdrInfo.rank }
+        );
+      await interaction.editReply({ embeds: [embed] });
     } else {
-      await interaction.editReply(
-        `Could not find information for Commander **${cmdrName}**.`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle('Error')
+        .setColor(0xFF0000)
+        .setDescription(`Could not find information for Commander **${cmdrName}**.`);
+      await interaction.editReply({ embeds: [embed] });
     }
   },
   // Add prefix command handler
@@ -47,13 +54,20 @@ module.exports = {
 
     if (result && result.events && result.events[0]) {
       const cmdrInfo = result.events[0].eventData;
-      return loadingMessage.edit(
-        `**Commander:** ${cmdrName}\n**Rank:** ${cmdrInfo.rank}`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle('Commander Information')
+        .setColor(0x0099FF)
+        .addFields(
+          { name: 'Commander', value: cmdrName },
+          { name: 'Rank', value: cmdrInfo.rank }
+        );
+      return loadingMessage.edit({ embeds: [embed] });
     } else {
-      return loadingMessage.edit(
-        `Could not find information for Commander **${cmdrName}**.`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle('Error')
+        .setColor(0xFF0000)
+        .setDescription(`Could not find information for Commander **${cmdrName}**.`);
+      return loadingMessage.edit({ embeds: [embed] });
     }
   },
 };

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { fetchInaraData } = require("../utils/inaraAPI");
 
 module.exports = {
@@ -25,16 +25,24 @@ module.exports = {
 
     if (result && result.events && result.events[0]) {
       const systemInfo = result.events[0].eventData;
-      await interaction.editReply(
-        `**System:** ${systemName}\n**Population:** ${systemInfo.population}\n**Controlling Faction:** ${systemInfo.controllingFactionName}`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle(`System Information: ${systemName}`)
+        .setColor(0x0099FF)
+        .addFields(
+          { name: 'Population', value: `${systemInfo.population}`, inline: true },
+          { name: 'Controlling Faction', value: systemInfo.controllingFactionName, inline: true }
+        )
+        .setTimestamp();
+      await interaction.editReply({ embeds: [embed] });
     } else {
-      await interaction.editReply(
-        `Could not find system data for **${systemName}**.`
-      );
+      const errorEmbed = new EmbedBuilder()
+        .setTitle('Error')
+        .setColor(0xFF0000)
+        .setDescription(`Could not find system data for **${systemName}**.`)
+        .setTimestamp();
+      await interaction.editReply({ embeds: [errorEmbed] });
     }
   },
-  // Add prefix command handler
   async prefixExecute(message, args) {
     const systemName = args.join(" ");
     if (!systemName) return message.reply("Please provide a system name.");
@@ -50,13 +58,22 @@ module.exports = {
 
     if (result && result.events && result.events[0]) {
       const systemInfo = result.events[0].eventData;
-      return loadingMessage.edit(
-        `**System:** ${systemName}\n**Population:** ${systemInfo.population}\n**Controlling Faction:** ${systemInfo.controllingFactionName}`
-      );
+      const embed = new EmbedBuilder()
+        .setTitle(`System Information: ${systemName}`)
+        .setColor(0x0099FF)
+        .addFields(
+          { name: 'Population', value: `${systemInfo.population}`, inline: true },
+          { name: 'Controlling Faction', value: systemInfo.controllingFactionName, inline: true }
+        )
+        .setTimestamp();
+      return loadingMessage.edit({ embeds: [embed] });
     } else {
-      return loadingMessage.edit(
-        `Could not find system data for **${systemName}**.`
-      );
+      const errorEmbed = new EmbedBuilder()
+        .setTitle('Error')
+        .setColor(0xFF0000)
+        .setDescription(`Could not find system data for **${systemName}**.`)
+        .setTimestamp();
+      return loadingMessage.edit({ embeds: [errorEmbed] });
     }
   },
 };
